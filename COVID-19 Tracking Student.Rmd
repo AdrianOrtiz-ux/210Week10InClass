@@ -117,7 +117,12 @@ cases_avg %>%
   group_by(month_year) %>% 
   summarise(total = sum(case_daily, na.rm = TRUE), 
             average = mean(case_daily, na.rim = TRUE)) %>% 
-  arrange(desc(total))
+  arrange(desc(total)) %>% 
+  mutate(month_year_date = my(month_year)) %>% 
+  filter(total >= 2576066) %>% 
+  ggplot(aes(x = total, y = fct_reorder(month_year, total))) + 
+  geom_col()
+  
 
 
 
