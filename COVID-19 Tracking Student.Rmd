@@ -51,12 +51,35 @@ pop <- read_csv("USpop2019.csv")
 ```
 
 
+
+```{r eval = FALSE}
+cases %>%
+  group_by(state) %>%
+  mutate(case_daily = c(cases[1], diff(cases))) %>%
+  arrange(date) %>%
+  mutate(case_7 = rollmean(case_daily, k = 7, fill = NA, align = "right")) %>%
+  ungroup() %>% 
+  left_join(pop, by = c("state" = "NAME", "fips" = "GEOID")) %>% 
+  write_csv("clean_cases.csv")
+```
+
 ## Part 1 - Identify Research Questions
 Identify 2-3 potential research questions you could try to answer using the provided data (or if you had additional data).
 
+```{r}
+cases_avg <- read_csv("clean_cases.csv")
+```
+Which state had the highest number of cases in 2020?
 
+Which state has the highest average/daily death rate?
 
+Which state was the safest over the course of the pandemic?
 
+Which state had the most rapid increase in cases?
+
+Do high population states(> 10 million) have higher rates compared to other states?
+
+Which were the worst months (case counts) over the course of the pandemic so far?
 
 
 
@@ -65,10 +88,12 @@ Identify 2-3 potential research questions you could try to answer using the prov
 ## Part 2 - Outline the Process
 Pick one of the research questions above. Write a brief outline of the steps you would need to take to 1) prepare the data for analysis, and 2) analyze/visualize the data. 
 
+> Which were the worst months (case counts) over the course of the pandemic so far?
+
 Data Preparation  
 
-- Step 1:  
-- Step 2:  
+- Step 1:  Create (mutate) a new variable to represent the month and year
+- Step 2:  Group by month/year and sum up cases per month ir average daily cases per month (either works)
 
 
 Data Analysis/Visualization  
@@ -83,6 +108,19 @@ Start to translate your outline into code. You may need to look back at cheatshe
 
 ```{r}
 #data preparation
+cases_avg %>% 
+  mutate(month_year = lubridate::ymd(date), 
+         month = month(date, label = TRUE),
+         year = year(date)) %>% 
+  unite("month_year", month:year, sep = " ", 
+                            remove = FALSE) %>% 
+  group_by(month_year) %>% 
+  summarise(total = sum(case_daily, na.rm = TRUE), 
+            average = mean(case_daily, na.rim = TRUE)) %>% 
+  arrange(desc(total))
+
+
+
 ```
 
 
