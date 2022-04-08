@@ -121,7 +121,15 @@ cases_avg %>%
   mutate(month_year_date = my(month_year)) %>% 
   filter(total >= 2576066) %>% 
   ggplot(aes(x = total, y = fct_reorder(month_year, total))) + 
-  geom_col()
+  geom_col(aes(fill = factor(year(month_year_date)))) + 
+  labs(x = "Total cases of COVID-19 by Month in the USA", 
+       y = "Month and Year of the Pandemic", 
+       title = "Worst Months of the Pandemic", 
+       subtitle = "Top 10 Months by Case Totals", 
+       caption = "Source: NY Times", 
+       fill = "Year") + 
+  scale_x_continuous(labels = scales::comma) + 
+  theme_bw()
   
 
 
